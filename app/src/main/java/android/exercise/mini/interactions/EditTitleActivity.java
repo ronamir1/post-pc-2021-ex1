@@ -20,6 +20,7 @@ public class EditTitleActivity extends AppCompatActivity {
   // `private boolean isEditing = false;`
   // in onCreate() set `this.isEditing` to `true` once the user starts editing, set to `false` once done editing
   // in onBackPressed() check `if(this.isEditing)` to understand what to do
+  boolean isEditing = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,23 @@ public class EditTitleActivity extends AppCompatActivity {
 
       to complete (1.) & (2.), start by just changing visibility. only add animations after everything else is ready
        */
+      this.isEditing = true;
+      textViewTitle.animate().alpha(0f).setDuration(700L);
+      fabStartEdit.animate().alpha(0f).setDuration(700L).withEndAction(new Runnable() {
+        @Override
+        public void run() {
+          textViewTitle.setVisibility(View.INVISIBLE);
+          fabStartEdit.setVisibility(View.INVISIBLE);
+          fabEditDone.setAlpha(0f);
+          editTextTitle.setAlpha(0f);
+          fabEditDone.setVisibility(View.VISIBLE);
+          editTextTitle.setVisibility(View.VISIBLE);
+          editTextTitle.animate().alpha(1f).setDuration(700L);
+          fabEditDone.animate().alpha(1f).setDuration(700L);
+        }
+      }).start();
+
+
     });
 
     // handle clicks on "done edit"
@@ -69,6 +87,22 @@ public class EditTitleActivity extends AppCompatActivity {
 
       to complete (1.) & (2.), start by just changing visibility. only add animations after everything else is ready
        */
+      this.isEditing = false;
+      String editedText = editTextTitle.getText().toString();
+      textViewTitle.setText(editedText);
+      editTextTitle.animate().alpha(0f).setDuration(700L);
+      fabEditDone.animate().alpha(0f).setDuration(700L).withEndAction(new Runnable() {
+        @Override
+        public void run() {
+          fabEditDone.setVisibility(View.INVISIBLE);
+          editTextTitle.setVisibility(View.INVISIBLE);
+          textViewTitle.animate().alpha(1f).setDuration(700L);
+          fabStartEdit.animate().alpha(1f).setDuration(700L);
+          textViewTitle.setVisibility(View.VISIBLE);
+          fabStartEdit.setVisibility(View.VISIBLE);
+        }
+      }).start();
+
     });
   }
 
@@ -90,5 +124,30 @@ public class EditTitleActivity extends AppCompatActivity {
     to work with views, you will need to find them first.
     to find views call `findViewById()` in a same way like in `onCreate()`
      */
+    FloatingActionButton fabStartEdit = findViewById(R.id.fab_start_edit);
+    FloatingActionButton fabEditDone = findViewById(R.id.fab_edit_done);
+    TextView textViewTitle = findViewById(R.id.textViewPageTitle);
+    EditText editTextTitle = findViewById(R.id.editTextPageTitle);
+
+    if (this.isEditing){
+      this.isEditing = false;
+      String formerText = textViewTitle.getText().toString();
+      editTextTitle.animate().alpha(0f).setDuration(700L);
+      fabEditDone.animate().alpha(0f).setDuration(700L).withEndAction(new Runnable() {
+        @Override
+        public void run() {
+          fabEditDone.setVisibility(View.INVISIBLE);
+          editTextTitle.setVisibility(View.INVISIBLE);
+          editTextTitle.setText(formerText);
+          textViewTitle.animate().alpha(1f).setDuration(700L);
+          fabStartEdit.animate().alpha(1f).setDuration(700L);
+          textViewTitle.setVisibility(View.VISIBLE);
+          fabStartEdit.setVisibility(View.VISIBLE);
+        }
+      }).start();
+    }
+    else {
+      super.onBackPressed();
+    }
   }
 }
